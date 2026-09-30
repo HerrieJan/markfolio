@@ -1,0 +1,16 @@
+node_modules
+dist
+dist-ssr
+*.local
+.DS_Store
+src-tauri/target
+src-tauri/gen
+_reference
+.vscode
+.idea
+*.log
+*.tsbuildinfo
+
+_clone_shot*.png
+_reference/
+

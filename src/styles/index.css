@@ -1,0 +1,103 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow: hidden;
+  font-family:
+    'Segoe UI',
+    'Hiragino Sans',
+    'Hiragino Kaku Gothic ProN',
+    'Yu Gothic UI',
+    Meiryo,
+    sans-serif;
+}
+
+/* Markdown prose */
+.markdown-body {
+  @apply max-w-none leading-7 text-gray-800 dark:text-gray-100;
+}
+
+.markdown-body h1 {
+  @apply mb-4 mt-6 border-b border-border pb-2 text-3xl font-bold dark:border-border-dark;
+}
+
+.markdown-body h2 {
+  @apply mb-3 mt-8 border-b border-border pb-1 text-2xl font-semibold dark:border-border-dark;
+}
+
+.markdown-body h3 {
+  @apply mb-2 mt-6 text-xl font-semibold;
+}
+
+.markdown-body p {
+  @apply my-3;
+}
+
+.markdown-body ul {
+  @apply my-3 list-disc pl-6;
+}
+
+.markdown-body ol {
+  @apply my-3 list-decimal pl-6;
+}
+
+.markdown-body table {
+  @apply my-4 w-full border-collapse overflow-hidden rounded border border-border dark:border-border-dark;
+}
+
+.markdown-body th,
+.markdown-body td {
+  @apply border border-border px-3 py-2 text-left dark:border-border-dark;
+}
+
+.markdown-body th {
+  @apply bg-surface-muted font-semibold dark:bg-surface-dark-muted;
+}
+
+.markdown-body a {
+  @apply text-blue-600 underline dark:text-blue-400;
+}
+
+.markdown-body code {
+  @apply rounded bg-gray-100 px-1.5 py-0.5 text-[0.9em] dark:bg-gray-800;
+}
+
+.markdown-body pre {
+  @apply my-4 overflow-x-auto rounded-lg bg-gray-900 p-4 text-sm text-gray-100;
+}
+
+.markdown-body pre code {
+  @apply bg-transparent p-0 text-inherit;
+}
+
+.markdown-body blockquote {
+  @apply my-4 border-l-4 border-gray-300 pl-4 text-gray-600 dark:border-gray-600 dark:text-gray-300;
+}
+
+.diagram-card {
+  @apply relative my-4 overflow-auto rounded-lg border border-border bg-white p-4 dark:border-border-dark dark:bg-surface-dark-muted;
+}
+
+.bpmn-container .bjs-container {
+  height: 100%;
+}
+
+.hljs {
+  background: transparent !important;
+}

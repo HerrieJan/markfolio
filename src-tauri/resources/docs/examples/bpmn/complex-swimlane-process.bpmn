@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_Complex" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:collaboration id="Collaboration_Complex">
+    <bpmn:participant id="Participant_Employee" name="社員" processRef="Process_Employee" />
+    <bpmn:participant id="Participant_Manager" name="マネージャー" processRef="Process_Manager" />
+    <bpmn:participant id="Participant_Accounting" name="経理部門" processRef="Process_Accounting" />
+    <bpmn:messageFlow id="MessageFlow_Submit" sourceRef="Task_CreateExpense" targetRef="Task_ManagerReview" />
+    <bpmn:messageFlow id="MessageFlow_ToAccounting" sourceRef="Task_ManagerApprove" targetRef="Task_Process" />
+    <bpmn:messageFlow id="MessageFlow_Notification" sourceRef="Task_Notify" targetRef="EndEvent_Employee" />
+  </bpmn:collaboration>
+
+  <bpmn:process id="Process_Employee" name="社員プロセス">
+    <bpmn:startEvent id="StartEvent_Employee" name="経費申請&#10;開始">
+      <bpmn:outgoing>Flow_E1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Task_CreateExpense" name="経費申請書&#10;作成">
+      <bpmn:incoming>Flow_E1</bpmn:incoming>
+      <bpmn:incoming>Flow_E3</bpmn:incoming>
+      <bpmn:outgoing>Flow_E2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="EndEvent_Employee" name="申請完了">
+      <bpmn:incoming>Flow_E2</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_E1" sourceRef="StartEvent_Employee" targetRef="Task_CreateExpense" />
+    <bpmn:sequenceFlow id="Flow_E2" sourceRef="Task_CreateExpense" targetRef="EndEvent_Employee" />
+    <bpmn:sequenceFlow id="Flow_E3" sourceRef="BoundaryEvent_Rejected" targetRef="Task_CreateExpense" />
+    <bpmn:boundaryEvent id="BoundaryEvent_Rejected" name="差戻し" attachedToRef="EndEvent_Employee">
+      <bpmn:outgoing>Flow_E3</bpmn:outgoing>
+      <bpmn:messageEventDefinition />
+    </bpmn:boundaryEvent>
+  </bpmn:process>
+
+  <bpmn:process id="Process_Manager" name="マネージャープロセス">
+    <bpmn:task id="Task_ManagerReview" name="申請内容&#10;確認">
+      <bpmn:outgoing>Flow_M1</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gateway_ManagerDecision" name="承認?">
+      <bpmn:incoming>Flow_M1</bpmn:incoming>
+      <bpmn:outgoing>Flow_M2</bpmn:outgoing>
+      <bpmn:outgoing>Flow_M3</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_ManagerApprove" name="承認">
+      <bpmn:incoming>Flow_M2</bpmn:incoming>
+      <bpmn:outgoing>Flow_M4</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_ManagerReject" name="差戻し">
+      <bpmn:incoming>Flow_M3</bpmn:incoming>
+      <bpmn:outgoing>Flow_M5</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="EndEvent_Manager" name="処理完了">
+      <bpmn:incoming>Flow_M4</bpmn:incoming>
+      <bpmn:incoming>Flow_M5</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_M1" sourceRef="Task_ManagerReview" targetRef="Gateway_ManagerDecision" />
+    <bpmn:sequenceFlow id="Flow_M2" name="承認" sourceRef="Gateway_ManagerDecision" targetRef="Task_ManagerApprove" />
+    <bpmn:sequenceFlow id="Flow_M3" name="差戻し" sourceRef="Gateway_ManagerDecision" targetRef="Task_ManagerReject" />
+    <bpmn:sequenceFlow id="Flow_M4" sourceRef="Task_ManagerApprove" targetRef="EndEvent_Manager" />
+    <bpmn:sequenceFlow id="Flow_M5" sourceRef="Task_ManagerReject" targetRef="EndEvent_Manager" />
+  </bpmn:process>
+
+  <bpmn:process id="Process_Accounting" name="経理プロセス">
+    <bpmn:task id="Task_Process" name="支払処理">
+      <bpmn:outgoing>Flow_A1</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:parallelGateway id="Gateway_Parallel" name="">
+      <bpmn:incoming>Flow_A1</bpmn:incoming>
+      <bpmn:outgoing>Flow_A2</bpmn:outgoing>
+      <bpmn:outgoing>Flow_A3</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:task id="Task_Record" name="帳簿記録">
+      <bpmn:incoming>Flow_A2</bpmn:incoming>
+      <bpmn:outgoing>Flow_A4</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Notify" name="完了通知">
+      <bpmn:incoming>Flow_A3</bpmn:incoming>
+      <bpmn:outgoing>Flow_A5</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:parallelGateway id="Gateway_Join" name="">
+      <bpmn:incoming>Flow_A4</bpmn:incoming>
+      <bpmn:incoming>Flow_A5</bpmn:incoming>
+      <bpmn:outgoing>Flow_A6</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:endEvent id="EndEvent_Accounting" name="経理処理&#10;完了">
+      <bpmn:incoming>Flow_A6</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_A1" sourceRef="Task_Process" targetRef="Gateway_Parallel" />
+    <bpmn:sequenceFlow id="Flow_A2" sourceRef="Gateway_Parallel" targetRef="Task_Record" />
+    <bpmn:sequenceFlow id="Flow_A3" sourceRef="Gateway_Parallel" targetRef="Task_Notify" />
+    <bpmn:sequenceFlow id="Flow_A4" sourceRef="Task_Record" targetRef="Gateway_Join" />
+    <bpmn:sequenceFlow id="Flow_A5" sourceRef="Task_Notify" targetRef="Gateway_Join" />
+    <bpmn:sequenceFlow id="Flow_A6" sourceRef="Gateway_Join" targetRef="EndEvent_Accounting" />
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Complex">
+    <bpmndi:BPMNPlane id="BPMNPlane_Complex" bpmnElement="Collaboration_Complex">
+      <!-- 社員レーン -->
+      <bpmndi:BPMNShape id="Participant_Employee_di" bpmnElement="Participant_Employee" isHorizontal="true">
+        <dc:Bounds x="120" y="80" width="900" height="150" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_Employee_di" bpmnElement="StartEvent_Employee">
+        <dc:Bounds x="172" y="127" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="162" y="170" width="56" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CreateExpense_di" bpmnElement="Task_CreateExpense">
+        <dc:Bounds x="270" y="105" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Employee_di" bpmnElement="EndEvent_Employee">
+        <dc:Bounds x="912" y="127" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="906" y="170" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BoundaryEvent_Rejected_di" bpmnElement="BoundaryEvent_Rejected">
+        <dc:Bounds x="912" y="109" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="948" y="117" width="36" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_E1_di" bpmnElement="Flow_E1">
+        <di:waypoint x="208" y="145" />
+        <di:waypoint x="270" y="145" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_E2_di" bpmnElement="Flow_E2">
+        <di:waypoint x="370" y="145" />
+        <di:waypoint x="912" y="145" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_E3_di" bpmnElement="Flow_E3">
+        <di:waypoint x="930" y="109" />
+        <di:waypoint x="930" y="90" />
+        <di:waypoint x="320" y="90" />
+        <di:waypoint x="320" y="105" />
+      </bpmndi:BPMNEdge>
+
+      <!-- マネージャーレーン -->
+      <bpmndi:BPMNShape id="Participant_Manager_di" bpmnElement="Participant_Manager" isHorizontal="true">
+        <dc:Bounds x="120" y="280" width="900" height="200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ManagerReview_di" bpmnElement="Task_ManagerReview">
+        <dc:Bounds x="270" y="340" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_ManagerDecision_di" bpmnElement="Gateway_ManagerDecision" isMarkerVisible="true">
+        <dc:Bounds x="425" y="355" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="432" y="331" width="36" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ManagerApprove_di" bpmnElement="Task_ManagerApprove">
+        <dc:Bounds x="530" y="300" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ManagerReject_di" bpmnElement="Task_ManagerReject">
+        <dc:Bounds x="530" y="400" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Manager_di" bpmnElement="EndEvent_Manager">
+        <dc:Bounds x="692" y="362" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="686" y="405" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_M1_di" bpmnElement="Flow_M1">
+        <di:waypoint x="370" y="380" />
+        <di:waypoint x="425" y="380" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_M2_di" bpmnElement="Flow_M2">
+        <di:waypoint x="450" y="355" />
+        <di:waypoint x="450" y="330" />
+        <di:waypoint x="530" y="330" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="458" y="313" width="24" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_M3_di" bpmnElement="Flow_M3">
+        <di:waypoint x="450" y="405" />
+        <di:waypoint x="450" y="430" />
+        <di:waypoint x="530" y="430" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="451" y="433" width="36" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_M4_di" bpmnElement="Flow_M4">
+        <di:waypoint x="630" y="330" />
+        <di:waypoint x="661" y="330" />
+        <di:waypoint x="661" y="380" />
+        <di:waypoint x="692" y="380" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_M5_di" bpmnElement="Flow_M5">
+        <di:waypoint x="630" y="430" />
+        <di:waypoint x="661" y="430" />
+        <di:waypoint x="661" y="380" />
+        <di:waypoint x="692" y="380" />
+      </bpmndi:BPMNEdge>
+
+      <!-- 経理部門レーン -->
+      <bpmndi:BPMNShape id="Participant_Accounting_di" bpmnElement="Participant_Accounting" isHorizontal="true">
+        <dc:Bounds x="120" y="530" width="900" height="200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Process_di" bpmnElement="Task_Process">
+        <dc:Bounds x="530" y="590" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Parallel_di" bpmnElement="Gateway_Parallel">
+        <dc:Bounds x="685" y="605" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Record_di" bpmnElement="Task_Record">
+        <dc:Bounds x="780" y="550" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Notify_di" bpmnElement="Task_Notify">
+        <dc:Bounds x="780" y="650" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Join_di" bpmnElement="Gateway_Join">
+        <dc:Bounds x="925" y="605" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Accounting_di" bpmnElement="EndEvent_Accounting">
+        <dc:Bounds x="932" y="682" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="920" y="725" width="60" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_A1_di" bpmnElement="Flow_A1">
+        <di:waypoint x="630" y="630" />
+        <di:waypoint x="685" y="630" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_A2_di" bpmnElement="Flow_A2">
+        <di:waypoint x="710" y="605" />
+        <di:waypoint x="710" y="580" />
+        <di:waypoint x="780" y="580" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_A3_di" bpmnElement="Flow_A3">
+        <di:waypoint x="710" y="655" />
+        <di:waypoint x="710" y="680" />
+        <di:waypoint x="780" y="680" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_A4_di" bpmnElement="Flow_A4">
+        <di:waypoint x="880" y="580" />
+        <di:waypoint x="950" y="580" />
+        <di:waypoint x="950" y="605" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_A5_di" bpmnElement="Flow_A5">
+        <di:waypoint x="880" y="680" />
+        <di:waypoint x="950" y="680" />
+        <di:waypoint x="950" y="655" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_A6_di" bpmnElement="Flow_A6">
+        <di:waypoint x="950" y="655" />
+        <di:waypoint x="950" y="682" />
+      </bpmndi:BPMNEdge>
+
+      <!-- メッセージフロー -->
+      <bpmndi:BPMNEdge id="MessageFlow_Submit_di" bpmnElement="MessageFlow_Submit">
+        <di:waypoint x="320" y="185" />
+        <di:waypoint x="320" y="340" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MessageFlow_ToAccounting_di" bpmnElement="MessageFlow_ToAccounting">
+        <di:waypoint x="580" y="360" />
+        <di:waypoint x="580" y="590" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MessageFlow_Notification_di" bpmnElement="MessageFlow_Notification">
+        <di:waypoint x="830" y="650" />
+        <di:waypoint x="830" y="145" />
+        <di:waypoint x="912" y="145" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

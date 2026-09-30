@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" id="Definitions_Colored" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_Colored" isExecutable="false">
+    <bpmn:startEvent id="StartEvent_1" name="注文受付">
+      <bpmn:outgoing>Flow_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Task_Validate" name="注文検証">
+      <bpmn:incoming>Flow_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gateway_Valid" name="有効?">
+      <bpmn:incoming>Flow_2</bpmn:incoming>
+      <bpmn:outgoing>Flow_3</bpmn:outgoing>
+      <bpmn:outgoing>Flow_4</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_Process" name="注文処理">
+      <bpmn:incoming>Flow_3</bpmn:incoming>
+      <bpmn:outgoing>Flow_5</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Reject" name="注文却下">
+      <bpmn:incoming>Flow_4</bpmn:incoming>
+      <bpmn:outgoing>Flow_6</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Ship" name="商品発送">
+      <bpmn:incoming>Flow_5</bpmn:incoming>
+      <bpmn:outgoing>Flow_7</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Notify" name="通知送信">
+      <bpmn:incoming>Flow_6</bpmn:incoming>
+      <bpmn:incoming>Flow_7</bpmn:incoming>
+      <bpmn:outgoing>Flow_8</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="EndEvent_1" name="処理完了">
+      <bpmn:incoming>Flow_8</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="Task_Validate" />
+    <bpmn:sequenceFlow id="Flow_2" sourceRef="Task_Validate" targetRef="Gateway_Valid" />
+    <bpmn:sequenceFlow id="Flow_3" name="Yes" sourceRef="Gateway_Valid" targetRef="Task_Process" />
+    <bpmn:sequenceFlow id="Flow_4" name="No" sourceRef="Gateway_Valid" targetRef="Task_Reject" />
+    <bpmn:sequenceFlow id="Flow_5" sourceRef="Task_Process" targetRef="Task_Ship" />
+    <bpmn:sequenceFlow id="Flow_6" sourceRef="Task_Reject" targetRef="Task_Notify" />
+    <bpmn:sequenceFlow id="Flow_7" sourceRef="Task_Ship" targetRef="Task_Notify" />
+    <bpmn:sequenceFlow id="Flow_8" sourceRef="Task_Notify" targetRef="EndEvent_1" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Colored">
+    <bpmndi:BPMNPlane id="BPMNPlane_Colored" bpmnElement="Process_Colored">
+      <!-- 開始イベント - 緑 -->
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1" bioc:stroke="#43a047" bioc:fill="#c8e6c9">
+        <dc:Bounds x="152" y="172" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="146" y="215" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <!-- 検証タスク - 青 -->
+      <bpmndi:BPMNShape id="Task_Validate_di" bpmnElement="Task_Validate" bioc:stroke="#1e88e5" bioc:fill="#bbdefb">
+        <dc:Bounds x="240" y="150" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <!-- 分岐ゲートウェイ - 黄色 -->
+      <bpmndi:BPMNShape id="Gateway_Valid_di" bpmnElement="Gateway_Valid" isMarkerVisible="true" bioc:stroke="#fbc02d" bioc:fill="#fff9c4">
+        <dc:Bounds x="395" y="165" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="402" y="141" width="36" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <!-- 処理タスク - 緑 -->
+      <bpmndi:BPMNShape id="Task_Process_di" bpmnElement="Task_Process" bioc:stroke="#43a047" bioc:fill="#c8e6c9">
+        <dc:Bounds x="500" y="90" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <!-- 却下タスク - 赤 -->
+      <bpmndi:BPMNShape id="Task_Reject_di" bpmnElement="Task_Reject" bioc:stroke="#e53935" bioc:fill="#ffcdd2">
+        <dc:Bounds x="500" y="220" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <!-- 発送タスク - 紫 -->
+      <bpmndi:BPMNShape id="Task_Ship_di" bpmnElement="Task_Ship" bioc:stroke="#8e24aa" bioc:fill="#e1bee7">
+        <dc:Bounds x="660" y="90" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <!-- 通知タスク - オレンジ -->
+      <bpmndi:BPMNShape id="Task_Notify_di" bpmnElement="Task_Notify" bioc:stroke="#fb8c00" bioc:fill="#ffe0b2">
+        <dc:Bounds x="820" y="150" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <!-- 終了イベント - グレー -->
+      <bpmndi:BPMNShape id="EndEvent_1_di" bpmnElement="EndEvent_1" bioc:stroke="#757575" bioc:fill="#eeeeee">
+        <dc:Bounds x="982" y="172" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="976" y="215" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <!-- フロー -->
+      <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1">
+        <di:waypoint x="188" y="190" />
+        <di:waypoint x="240" y="190" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_2_di" bpmnElement="Flow_2">
+        <di:waypoint x="340" y="190" />
+        <di:waypoint x="395" y="190" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_3_di" bpmnElement="Flow_3" bioc:stroke="#43a047">
+        <di:waypoint x="420" y="165" />
+        <di:waypoint x="420" y="130" />
+        <di:waypoint x="500" y="130" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="428" y="113" width="21" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_4_di" bpmnElement="Flow_4" bioc:stroke="#e53935">
+        <di:waypoint x="420" y="215" />
+        <di:waypoint x="420" y="260" />
+        <di:waypoint x="500" y="260" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="428" y="243" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_5_di" bpmnElement="Flow_5">
+        <di:waypoint x="600" y="130" />
+        <di:waypoint x="660" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_6_di" bpmnElement="Flow_6">
+        <di:waypoint x="600" y="260" />
+        <di:waypoint x="790" y="260" />
+        <di:waypoint x="790" y="190" />
+        <di:waypoint x="820" y="190" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_7_di" bpmnElement="Flow_7">
+        <di:waypoint x="760" y="130" />
+        <di:waypoint x="790" y="130" />
+        <di:waypoint x="790" y="190" />
+        <di:waypoint x="820" y="190" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_8_di" bpmnElement="Flow_8">
+        <di:waypoint x="920" y="190" />
+        <di:waypoint x="982" y="190" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

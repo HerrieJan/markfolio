@@ -1,0 +1,13 @@
+[
+  "README.md",
+  "getting-started.md",
+  "examples/bpmn/README.md",
+  "examples/bpmn/colored-process.bpmn",
+  "examples/bpmn/complex-swimlane-process.bpmn",
+  "examples/bpmn/event-subprocess-process.bpmn",
+  "examples/bpmn/parallel-gateway-process.bpmn",
+  "examples/bpmn/simple-process.bpmn",
+  "examples/bpmn/swimlane-process.bpmn",
+  "examples/drawio/Web3-TierArchitecture.drawio",
+  "examples/mermaid/diagram-examples.md"
+]
